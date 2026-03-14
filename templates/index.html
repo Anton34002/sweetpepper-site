@@ -609,7 +609,7 @@ footer a { color: var(--red); text-decoration: none; }
   </div>
   <div class="cats-scroll" id="catScroll">
     {% for cat in menu.keys() %}
-    <button class="cat-btn {% if loop.first %}active{% endif %}" onclick="showCat('{{ cat }}', this)">{{ cat }}</button>
+    <button class="cat-btn {% if loop.first %}active{% endif %}" onclick="showCat({{ loop.index }}, this)">{{ cat }}</button>
     {% endfor %}
   </div>
   {% for cat, dishes in menu.items() %}
@@ -718,9 +718,10 @@ footer a { color: var(--red); text-decoration: none; }
 const MENU = {{ menu | tojson }};
 const catKeys = Object.keys(MENU);
 
-function showCat(cat, btn) {
+// ИСПРАВЛЕНО: используем числовой индекс вместо строки с эмодзи
+function showCat(idx, btn) {
   document.querySelectorAll('.cat-section').forEach((el, i) => {
-    el.style.display = (catKeys[i] === cat) ? 'grid' : 'none';
+    el.style.display = (i + 1 === idx) ? 'grid' : 'none';
   });
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
