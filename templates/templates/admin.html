@@ -50,6 +50,10 @@ header {
 .btn-gold { background: var(--gold); color: #0d0d0d; border: none; font-weight: 600; }
 .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
 .btn-ghost:hover { border-color: var(--red); color: var(--red); }
+.btn-danger { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; }
+.btn-danger:hover { background: #e74c3c; color: white; }
+.btn-green { background: #27ae60; color: white; border: none; }
+.btn-green:hover { background: #2ecc71; }
 
 main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
 
@@ -91,11 +95,18 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
   font-size: 0.88rem;
   outline: none;
   transition: border-color 0.2s;
+  width: 100%;
 }
 .field-input:focus { border-color: var(--red); }
-.save-msg { color: #2ecc71; font-size: 0.82rem; display: none; margin-top: 0.5rem; }
 
 /* MENU */
+.menu-top {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
 .cat-select {
   background: var(--dark2);
   border: 1px solid var(--border);
@@ -104,9 +115,8 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
   font-family: 'Raleway', sans-serif;
   font-size: 0.88rem;
   outline: none;
-  width: 100%;
-  max-width: 400px;
-  margin-bottom: 1.5rem;
+  flex: 1;
+  min-width: 200px;
   cursor: pointer;
 }
 .dish-row {
@@ -123,13 +133,22 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
 .dish-row-name { font-size: 0.95rem; font-weight: 500; }
 .dish-row-price { color: var(--gold); font-size: 0.95rem; }
 .dish-row-meta { font-size: 0.75rem; color: var(--muted); }
+.dish-row-photo-badge {
+  font-size: 0.7rem;
+  background: var(--dark3);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.4rem;
+  color: var(--gold);
+  margin-left: 0.5rem;
+}
 
 /* DISH EDITOR */
 .dish-editor {
-  background: var(--dark2);
+  background: var(--dark3);
   border: 1px solid var(--border);
+  border-top: none;
   padding: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: none;
 }
 .dish-editor.open { display: block; }
@@ -137,6 +156,69 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
 .editor-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 @media (max-width: 600px) { .editor-fields { grid-template-columns: 1fr; } }
 .editor-fields .full { grid-column: 1 / -1; }
+
+/* PHOTO BLOCK */
+.photo-block {
+  grid-column: 1 / -1;
+  border: 1px solid var(--border);
+  padding: 1rem;
+  background: var(--dark2);
+}
+.photo-block-title { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+.photo-current {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.photo-current img {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+.photo-current-none {
+  width: 80px;
+  height: 60px;
+  background: var(--dark3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.photo-upload-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.photo-file-input { display: none; }
+.photo-upload-label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--dark3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.photo-upload-label:hover { border-color: var(--gold); color: var(--gold); }
+.photo-uploading { font-size: 0.8rem; color: var(--muted); display: none; }
+
+/* ADD DISH FORM */
+.add-dish-form {
+  background: var(--dark2);
+  border: 1px solid var(--gold);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+.add-dish-form.open { display: block; }
+.add-dish-form h3 { font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 1rem; }
+.add-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (max-width: 600px) { .add-fields { grid-template-columns: 1fr; } }
+.add-fields .full { grid-column: 1 / -1; }
 
 /* EVENTS */
 .add-event-form {
@@ -158,7 +240,6 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
   position: relative;
 }
 .photo-upload-area:hover { border-color: var(--red); }
-.photo-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .photo-preview { max-width: 100%; max-height: 200px; margin-top: 1rem; display: none; }
 
 .event-item {
@@ -220,6 +301,8 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.error { background: var(--red); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
 </style>
 </head>
 <body>
@@ -278,11 +361,46 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
   <!-- MENU TAB -->
   <div class="tab-content" id="tab-menu">
     <h2 class="section-title">Редактирование меню</h2>
-    <select class="cat-select" id="catSelect" onchange="loadDishes()">
-      {% for cat in menu.keys() %}
-      <option value="{{ cat }}">{{ cat }}</option>
-      {% endfor %}
-    </select>
+    <div class="menu-top">
+      <select class="cat-select" id="catSelect" onchange="loadDishes()">
+        {% for cat in menu.keys() %}
+        <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-green" onclick="toggleAddDish()">➕ Добавить блюдо</button>
+    </div>
+
+    <!-- ФОРМА ДОБАВЛЕНИЯ БЛЮДА -->
+    <div class="add-dish-form" id="addDishForm">
+      <h3>➕ Новое блюдо</h3>
+      <div class="add-fields">
+        <div class="field-group">
+          <div class="field-label">Название *</div>
+          <input class="field-input" id="new-name" placeholder="Например: Борщ фирменный">
+        </div>
+        <div class="field-group">
+          <div class="field-label">Цена (₽) *</div>
+          <input class="field-input" id="new-price" type="number" placeholder="350">
+        </div>
+        <div class="field-group">
+          <div class="field-label">Выход</div>
+          <input class="field-input" id="new-weight" placeholder="300 г">
+        </div>
+        <div class="field-group full">
+          <div class="field-label">Описание</div>
+          <input class="field-input" id="new-desc" placeholder="Краткое описание блюда">
+        </div>
+        <div class="field-group full">
+          <div class="field-label">КБЖУ</div>
+          <input class="field-input" id="new-kbju" placeholder="320 ккал | Б:15 Ж:10 У:35">
+        </div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap">
+        <button class="btn btn-green" onclick="addDish()">Добавить</button>
+        <button class="btn btn-outline" onclick="toggleAddDish()">Отмена</button>
+      </div>
+    </div>
+
     <div id="dishesList"></div>
   </div>
 
@@ -360,7 +478,7 @@ function showToast(msg, error=false) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// SETTINGS
+// ─── SETTINGS ───────────────────────────────
 async function saveSettings() {
   const form = new FormData();
   form.append('address', document.getElementById('s-address').value);
@@ -375,27 +493,42 @@ async function saveSettings() {
   else showToast('❌ Ошибка', true);
 }
 
-// MENU
-let openEditor = null;
+// ─── MENU ────────────────────────────────────
+function toggleAddDish() {
+  const form = document.getElementById('addDishForm');
+  form.classList.toggle('open');
+  if (form.classList.contains('open')) {
+    document.getElementById('new-name').focus();
+  }
+}
 
 function loadDishes() {
   const cat = document.getElementById('catSelect').value;
   const dishes = MENU[cat] || [];
   const list = document.getElementById('dishesList');
+
+  if (dishes.length === 0) {
+    list.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;padding:1rem 0">В этой категории пока нет блюд</p>';
+    return;
+  }
+
   list.innerHTML = dishes.map((d, i) => `
-    <div class="dish-row" onclick="toggleEditor('${cat}', ${i})">
+    <div class="dish-row" id="row-${i}" onclick="toggleEditor('${escCat(cat)}', ${i})">
       <div class="dish-row-top">
-        <div class="dish-row-name">${d.name}</div>
+        <div class="dish-row-name">
+          ${d.name}
+          ${d.photo ? '<span class="dish-row-photo-badge">📸 фото</span>' : ''}
+        </div>
         <div class="dish-row-price">${d.price} ₽</div>
       </div>
       <div class="dish-row-meta">${[d.weight, d.description].filter(Boolean).join(' · ')}</div>
     </div>
     <div class="dish-editor" id="editor-${i}">
-      <div class="editor-title">✏️ ${d.name}</div>
+      <div class="editor-title">✏️ Редактирование</div>
       <div class="editor-fields">
         <div class="field-group">
           <div class="field-label">Название</div>
-          <input class="field-input" id="f-name-${i}" value="${d.name || ''}">
+          <input class="field-input" id="f-name-${i}" value="${esc(d.name || '')}">
         </div>
         <div class="field-group">
           <div class="field-label">Цена (₽)</div>
@@ -403,23 +536,59 @@ function loadDishes() {
         </div>
         <div class="field-group">
           <div class="field-label">Выход</div>
-          <input class="field-input" id="f-weight-${i}" value="${d.weight || ''}">
+          <input class="field-input" id="f-weight-${i}" value="${esc(d.weight || '')}">
         </div>
         <div class="field-group full">
           <div class="field-label">Описание</div>
-          <input class="field-input" id="f-desc-${i}" value="${d.description || ''}">
+          <input class="field-input" id="f-desc-${i}" value="${esc(d.description || '')}">
         </div>
         <div class="field-group full">
-          <div class="field-label">КБЖУ (например: 320 ккал | Б:15 Ж:10 У:35)</div>
-          <input class="field-input" id="f-kbju-${i}" value="${d.kbju || ''}">
+          <div class="field-label">КБЖУ</div>
+          <input class="field-input" id="f-kbju-${i}" value="${esc(d.kbju || '')}">
         </div>
+
+        <!-- ФОТО -->
+        <div class="photo-block">
+          <div class="photo-block-title">📸 Фото блюда</div>
+          <div class="photo-current" id="photo-current-${i}">
+            ${d.photo
+              ? `<img src="${d.photo}" alt="фото">`
+              : '<div class="photo-current-none">🍽</div>'
+            }
+            <div>
+              ${d.photo
+                ? `<div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem">Фото загружено</div>
+                   <button class="btn btn-danger" style="font-size:0.7rem;padding:0.35rem 0.75rem" onclick="deletePhoto('${escCat(cat)}', ${i})">🗑 Удалить фото</button>`
+                : '<div style="font-size:0.8rem;color:var(--muted)">Фото не загружено</div>'
+              }
+            </div>
+          </div>
+          <div class="photo-upload-row">
+            <label class="photo-upload-label" for="photo-file-${i}">
+              ${d.photo ? '🔄 Заменить фото' : '📸 Загрузить фото'}
+            </label>
+            <input class="photo-file-input" type="file" id="photo-file-${i}" accept="image/jpeg,image/png,image/webp"
+              onchange="uploadPhoto(this, '${escCat(cat)}', ${i})">
+            <span class="photo-uploading" id="photo-uploading-${i}">⏳ Загружаю...</span>
+          </div>
+        </div>
+
       </div>
-      <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap">
-        <button class="btn btn-red" onclick="saveDish('${cat}', ${i})">Сохранить</button>
+      <hr class="divider">
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        <button class="btn btn-red" onclick="saveDish('${escCat(cat)}', ${i})">💾 Сохранить</button>
         <button class="btn btn-outline" onclick="document.getElementById('editor-${i}').classList.remove('open')">Отмена</button>
+        <button class="btn btn-danger" style="margin-left:auto" onclick="deleteDish('${escCat(cat)}', ${i})">🗑 Удалить блюдо</button>
       </div>
     </div>
   `).join('');
+}
+
+function esc(str) {
+  return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function escCat(cat) {
+  return cat.replace(/'/g, "\\'");
 }
 
 function toggleEditor(cat, idx) {
@@ -448,7 +617,102 @@ async function saveDish(cat, idx) {
   loadDishes();
 }
 
-// EVENTS
+async function uploadPhoto(input, cat, idx) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const uploading = document.getElementById(`photo-uploading-${idx}`);
+  uploading.style.display = 'inline';
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const r = await fetch('/admin/upload_photo', { method: 'POST', body: formData });
+    const data = await r.json();
+    if (data.ok) {
+      // Сохраняем URL в блюде
+      await fetch('/admin/update_dish', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ category: cat, idx, field: 'photo', value: data.url })
+      });
+      MENU[cat][idx].photo = data.url;
+      showToast('✅ Фото загружено!');
+      loadDishes();
+    } else {
+      showToast('❌ ' + (data.error || 'Ошибка загрузки'), true);
+    }
+  } catch(e) {
+    showToast('❌ Ошибка загрузки', true);
+  } finally {
+    uploading.style.display = 'none';
+  }
+}
+
+async function deletePhoto(cat, idx) {
+  if (!confirm('Удалить фото?')) return;
+  const r = await fetch('/admin/delete_photo', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ category: cat, idx })
+  });
+  if ((await r.json()).ok) {
+    MENU[cat][idx].photo = '';
+    showToast('Фото удалено');
+    loadDishes();
+  }
+}
+
+async function addDish() {
+  const cat = document.getElementById('catSelect').value;
+  const name = document.getElementById('new-name').value.trim();
+  const price = document.getElementById('new-price').value.trim();
+  if (!name || !price) { showToast('Введите название и цену', true); return; }
+
+  const newDish = {
+    name,
+    price: parseInt(price),
+    weight: document.getElementById('new-weight').value.trim(),
+    description: document.getElementById('new-desc').value.trim(),
+    kbju: document.getElementById('new-kbju').value.trim(),
+    photo: ''
+  };
+
+  const r = await fetch('/admin/add_dish', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ category: cat, dish: newDish })
+  });
+  const data = await r.json();
+  if (data.ok) {
+    MENU[cat].push(newDish);
+    // Очищаем форму
+    ['new-name','new-price','new-weight','new-desc','new-kbju'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('addDishForm').classList.remove('open');
+    showToast('✅ Блюдо добавлено!');
+    loadDishes();
+  } else {
+    showToast('❌ Ошибка', true);
+  }
+}
+
+async function deleteDish(cat, idx) {
+  const name = MENU[cat][idx].name;
+  if (!confirm(`Удалить блюдо «${name}»?`)) return;
+  const r = await fetch('/admin/delete_dish', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ category: cat, idx })
+  });
+  if ((await r.json()).ok) {
+    MENU[cat].splice(idx, 1);
+    showToast('Блюдо удалено');
+    loadDishes();
+  }
+}
+
+// ─── EVENTS ──────────────────────────────────
 function previewPhoto(input) {
   const file = input.files[0];
   if (!file) return;
@@ -466,14 +730,16 @@ async function addEvent() {
   const title = document.getElementById('ev-title').value.trim();
   if (!title) { showToast('Введите название', true); return; }
   const photoInput = document.getElementById('ev-photo');
-  let photoData = '';
+  let photoUrl = '';
+
   if (photoInput.files[0]) {
-    photoData = await new Promise(res => {
-      const reader = new FileReader();
-      reader.onload = e => res(e.target.result);
-      reader.readAsDataURL(photoInput.files[0]);
-    });
+    const formData = new FormData();
+    formData.append('file', photoInput.files[0]);
+    const r = await fetch('/admin/upload_photo', { method: 'POST', body: formData });
+    const data = await r.json();
+    if (data.ok) photoUrl = data.url;
   }
+
   const r = await fetch('/admin/add_event', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -481,15 +747,13 @@ async function addEvent() {
       title,
       date: document.getElementById('ev-date').value,
       description: document.getElementById('ev-desc').value,
-      photo: photoData,
+      photo: photoUrl,
     })
   });
   const data = await r.json();
   if (data.ok) {
     showToast('✅ Мероприятие добавлено!');
-    document.getElementById('ev-title').value = '';
-    document.getElementById('ev-date').value = '';
-    document.getElementById('ev-desc').value = '';
+    ['ev-title','ev-date','ev-desc'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('photoPreview').style.display = 'none';
     document.getElementById('uploadText').textContent = '📸 Нажмите чтобы выбрать фото';
     photoInput.value = '';
