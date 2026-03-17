@@ -2,3 +2,5 @@ pyTelegramBotAPI
 flask
 requests
 gunicorn
+cloudinary
+cloudinary
