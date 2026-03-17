@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, jsonify, request, session, redirect, url_for, send_from_directory
+from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 import json
 import os
-import base64
 from datetime import datetime
 from functools import wraps
+import cloudinary
+import cloudinary.uploader
 
 app = Flask(__name__)
 app.secret_key = "sweetpepper_secret_2025"
@@ -13,15 +14,14 @@ MENU_FILE = "menu.json"
 CAFE_INFO_FILE = "cafe_info.json"
 EVENTS_FILE = "events.json"
 ADMIN_PASSWORD = "pepper2025"
-UPLOAD_FOLDER = os.path.join("static", "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 
-# Создаём папку для загрузок если не существует
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-# ─────────────────────────────────────────────
-#  HELPERS
-# ─────────────────────────────────────────────
+# Cloudinary config
+cloudinary.config(
+    cloud_name="dqxc3rfml",
+    api_key="735795974666715",
+    api_secret="CvGvLny8_D8HPdGTv2C1oZO28sU"
+)
 
 FALLBACK_MENU = {
     "🍳 Завтраки": [{"name": "Овсянка с топпингом", "description": "280 г", "price": 205, "weight": "280 г", "kbju": "", "photo": ""}],
@@ -99,10 +99,6 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# ─────────────────────────────────────────────
-#  PUBLIC ROUTES
-# ─────────────────────────────────────────────
-
 @app.route("/")
 def index():
     menu = load_menu()
@@ -121,10 +117,6 @@ def api_info():
 @app.route("/api/events")
 def api_events():
     return jsonify(load_events())
-
-# ─────────────────────────────────────────────
-#  ADMIN ROUTES
-# ─────────────────────────────────────────────
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
@@ -203,57 +195,46 @@ def admin_update_dish():
             json.dump(menu, f, ensure_ascii=False, indent=2)
     return jsonify({"ok": True})
 
-# ─────────────────────────────────────────────
-#  ЗАГРУЗКА ФОТО
-# ─────────────────────────────────────────────
-
 @app.route("/admin/upload_photo", methods=["POST"])
 @admin_required
 def upload_photo():
-    """Загружает фото и возвращает URL для сохранения в меню."""
     if "file" not in request.files:
         return jsonify({"ok": False, "error": "Файл не передан"}), 400
-
     file = request.files["file"]
-
     if file.filename == "":
         return jsonify({"ok": False, "error": "Файл не выбран"}), 400
-
     if not allowed_file(file.filename):
         return jsonify({"ok": False, "error": "Недопустимый формат. Используй JPG, PNG, WEBP"}), 400
-
-    # Генерируем уникальное имя файла
-    ext = file.filename.rsplit(".", 1)[1].lower()
-    filename = f"{int(datetime.now().timestamp() * 1000)}.{ext}"
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(filepath)
-
-    url = f"/static/uploads/{filename}"
-    return jsonify({"ok": True, "url": url})
-
+    try:
+        result = cloudinary.uploader.upload(
+            file,
+            folder="sweetpepper",
+            transformation=[{"quality": "auto", "fetch_format": "auto"}]
+        )
+        url = result["secure_url"]
+        return jsonify({"ok": True, "url": url})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 @app.route("/admin/delete_photo", methods=["POST"])
 @admin_required
 def delete_photo():
-    """Удаляет фото с диска и убирает его из блюда в меню."""
     data = request.get_json()
     category = data.get("category")
     idx = data.get("idx")
-
     menu = load_menu()
     if category in menu and 0 <= idx < len(menu[category]):
         old_photo = menu[category][idx].get("photo", "")
-        # Удаляем файл с диска если он локальный
-        if old_photo.startswith("/static/uploads/"):
-            file_path = old_photo.lstrip("/")
-            if os.path.exists(file_path):
-                os.remove(file_path)
+        if "cloudinary.com" in old_photo:
+            try:
+                public_id = "sweetpepper/" + old_photo.split("/sweetpepper/")[1].split(".")[0]
+                cloudinary.uploader.destroy(public_id)
+            except Exception:
+                pass
         menu[category][idx]["photo"] = ""
         with open(MENU_FILE, "w", encoding="utf-8") as f:
             json.dump(menu, f, ensure_ascii=False, indent=2)
-
     return jsonify({"ok": True})
-
 
 @app.route("/admin/add_dish", methods=["POST"])
 @admin_required
@@ -268,7 +249,6 @@ def admin_add_dish():
             json.dump(menu, f, ensure_ascii=False, indent=2)
     return jsonify({"ok": True})
 
-
 @app.route("/admin/delete_dish", methods=["POST"])
 @admin_required
 def admin_delete_dish():
@@ -278,15 +258,16 @@ def admin_delete_dish():
     idx = data.get("idx")
     if category in menu and 0 <= idx < len(menu[category]):
         old_photo = menu[category][idx].get("photo", "")
-        if old_photo.startswith("/static/uploads/"):
-            file_path = old_photo.lstrip("/")
-            if os.path.exists(file_path):
-                os.remove(file_path)
+        if "cloudinary.com" in old_photo:
+            try:
+                public_id = "sweetpepper/" + old_photo.split("/sweetpepper/")[1].split(".")[0]
+                cloudinary.uploader.destroy(public_id)
+            except Exception:
+                pass
         menu[category].pop(idx)
         with open(MENU_FILE, "w", encoding="utf-8") as f:
             json.dump(menu, f, ensure_ascii=False, indent=2)
     return jsonify({"ok": True})
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
