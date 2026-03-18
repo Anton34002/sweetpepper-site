@@ -13,6 +13,7 @@ app.secret_key = os.environ.get("SECRET_KEY", "sweetpepper_secret_2025")
 MENU_FILE = "menu.json"
 CAFE_INFO_FILE = "cafe_info.json"
 EVENTS_FILE = "events.json"
+LUNCH_FILE = "lunch.json"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "pepper2025")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 
@@ -124,6 +125,21 @@ def load_events():
             pass
     return []
 
+def load_lunch():
+    if os.path.exists(LUNCH_FILE):
+        try:
+            with open(LUNCH_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data:
+                    return data
+        except Exception:
+            pass
+    return {}
+
+def save_lunch(lunch):
+    with open(LUNCH_FILE, "w", encoding="utf-8") as f:
+        json.dump(lunch, f, ensure_ascii=False, indent=2)
+
 def save_events(events):
     with open(EVENTS_FILE, "w", encoding="utf-8") as f:
         json.dump(events, f, ensure_ascii=False, indent=2)
@@ -148,10 +164,11 @@ def index():
     return render_template("index.html", menu=menu, info=info, events=events)
 
 @app.route("/lunch")
+@app.route("/lunch")
 def lunch():
     info = load_cafe_info()
-    return render_template("lunch.html", info=info)
-
+    lunch_data = load_lunch()
+    return render_template("lunch.html", info=info, lunch=lunch_data)
 @app.route("/api/menu")
 def api_menu():
     return jsonify(load_menu())
@@ -205,7 +222,8 @@ def admin_panel():
     menu = load_menu()
     info = load_cafe_info()
     events = load_events()
-    return render_template("admin.html", menu=menu, info=info, events=events)
+    lunch = load_lunch()
+    return render_template("admin.html", menu=menu, info=info, events=events, lunch=lunch)
 
 @app.route("/admin/save_info", methods=["POST"])
 @admin_required
@@ -337,6 +355,65 @@ def admin_delete_dish():
         menu[category].pop(idx)
         with open(MENU_FILE, "w", encoding="utf-8") as f:
             json.dump(menu, f, ensure_ascii=False, indent=2)
+    return jsonify({"ok": True})
+
+@app.route("/admin/update_lunch_dish", methods=["POST"])
+@admin_required
+def admin_update_lunch_dish():
+    data = request.get_json()
+    lunch = load_lunch()
+    category = data.get("category")
+    idx = data.get("idx")
+    field = data.get("field")
+    value = data.get("value")
+    if category in lunch and 0 <= idx < len(lunch[category]):
+        if field == "price":
+            try:
+                value = int(value)
+            except Exception:
+                pass
+        lunch[category][idx][field] = value
+        save_lunch(lunch)
+    return jsonify({"ok": True})
+
+@app.route("/admin/upload_lunch_photo", methods=["POST"])
+@admin_required
+def upload_lunch_photo():
+    if "file" not in request.files:
+        return jsonify({"ok": False, "error": "Файл не передан"}), 400
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"ok": False, "error": "Файл не выбран"}), 400
+    if not allowed_file(file.filename):
+        return jsonify({"ok": False, "error": "Недопустимый формат"}), 400
+    try:
+        result = cloudinary.uploader.upload(file, folder="sweetpepper/lunch", transformation=[{"quality": "auto", "fetch_format": "auto"}])
+        return jsonify({"ok": True, "url": result["secure_url"]})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+@app.route("/admin/add_lunch_dish", methods=["POST"])
+@admin_required
+def admin_add_lunch_dish():
+    data = request.get_json()
+    lunch = load_lunch()
+    category = data.get("category")
+    dish = data.get("dish")
+    if category in lunch and dish:
+        lunch[category].append(dish)
+        save_lunch(lunch)
+    return jsonify({"ok": True})
+
+@app.route("/admin/delete_lunch_dish", methods=["POST"])
+@admin_required
+def admin_delete_lunch_dish():
+    data = request.get_json()
+    lunch = load_lunch()
+    category = data.get("category")
+    idx = data.get("idx")
+    if category in lunch and 0 <= idx < len(lunch[category]):
+        lunch[category].pop(idx)
+        save_lunch(lunch)
     return jsonify({"ok": True})
 
 if __name__ == "__main__":
