@@ -6,18 +6,16 @@ from datetime import datetime, timedelta
 from functools import wraps
 import cloudinary
 import cloudinary.uploader
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "sweetpepper_secret_2025")
 
-MENU_FILE = "menu.json"
-CAFE_INFO_FILE = "cafe_info.json"
-EVENTS_FILE = "events.json"
-LUNCH_FILE = "lunch.json"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "pepper2025")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:vFRwTXvxZWlPlriIkChyNDnbgNxpsRSD@interchange.proxy.rlwy.net:24304/railway")
 
-# Cloudinary config — берём из переменных окружения
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "dqxc3rfml"),
     api_key=os.environ.get("CLOUDINARY_API_KEY", "735795974666715"),
@@ -25,40 +23,104 @@ cloudinary.config(
 )
 
 # ─────────────────────────────────────────────
-#  ЗАЩИТА ОТ БРУТФОРСА
+#  DATABASE
 # ─────────────────────────────────────────────
 
-# Хранит: {ip: {"attempts": N, "blocked_until": datetime}}
-login_attempts = {}
-MAX_ATTEMPTS = 5        # максимум попыток
-BLOCK_MINUTES = 15      # блокировка на 15 минут
+def get_db():
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    return conn
 
-def get_ip():
-    return request.headers.get("X-Forwarded-For", request.remote_addr)
+def init_db():
+    """Создаём таблицы если не существуют и заполняем начальными данными."""
+    conn = get_db()
+    cur = conn.cursor()
 
-def is_blocked(ip):
-    if ip not in login_attempts:
-        return False
-    data = login_attempts[ip]
-    if data.get("blocked_until") and datetime.now() < data["blocked_until"]:
-        return True
-    if data.get("blocked_until") and datetime.now() >= data["blocked_until"]:
-        # Разблокируем
-        login_attempts.pop(ip, None)
-    return False
+    # Таблица настроек (меню, ланч, мероприятия, инфо)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+    """)
 
-def register_failed_attempt(ip):
-    if ip not in login_attempts:
-        login_attempts[ip] = {"attempts": 0, "blocked_until": None}
-    login_attempts[ip]["attempts"] += 1
-    if login_attempts[ip]["attempts"] >= MAX_ATTEMPTS:
-        login_attempts[ip]["blocked_until"] = datetime.now() + timedelta(minutes=BLOCK_MINUTES)
+    # Проверяем есть ли данные
+    cur.execute("SELECT key FROM settings WHERE key = 'menu'")
+    if not cur.fetchone():
+        # Загружаем начальное меню из файла если есть
+        menu_data = {}
+        if os.path.exists("menu.json"):
+            try:
+                with open("menu.json", "r", encoding="utf-8") as f:
+                    menu_data = json.load(f)
+            except:
+                pass
+        if not menu_data:
+            menu_data = FALLBACK_MENU
+        cur.execute("INSERT INTO settings (key, value) VALUES (%s, %s)",
+                   ("menu", json.dumps(menu_data, ensure_ascii=False)))
 
-def reset_attempts(ip):
-    login_attempts.pop(ip, None)
+    cur.execute("SELECT key FROM settings WHERE key = 'lunch'")
+    if not cur.fetchone():
+        lunch_data = {}
+        if os.path.exists("lunch.json"):
+            try:
+                with open("lunch.json", "r", encoding="utf-8") as f:
+                    lunch_data = json.load(f)
+            except:
+                pass
+        cur.execute("INSERT INTO settings (key, value) VALUES (%s, %s)",
+                   ("lunch", json.dumps(lunch_data, ensure_ascii=False)))
+
+    cur.execute("SELECT key FROM settings WHERE key = 'events'")
+    if not cur.fetchone():
+        events_data = []
+        if os.path.exists("events.json"):
+            try:
+                with open("events.json", "r", encoding="utf-8") as f:
+                    events_data = json.load(f)
+            except:
+                pass
+        cur.execute("INSERT INTO settings (key, value) VALUES (%s, %s)",
+                   ("events", json.dumps(events_data, ensure_ascii=False)))
+
+    cur.execute("SELECT key FROM settings WHERE key = 'cafe_info'")
+    if not cur.fetchone():
+        info_data = {}
+        if os.path.exists("cafe_info.json"):
+            try:
+                with open("cafe_info.json", "r", encoding="utf-8") as f:
+                    info_data = json.load(f)
+            except:
+                pass
+        cur.execute("INSERT INTO settings (key, value) VALUES (%s, %s)",
+                   ("cafe_info", json.dumps(info_data, ensure_ascii=False)))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def db_get(key):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT value FROM settings WHERE key = %s", (key,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return json.loads(row["value"]) if row else None
+
+def db_set(key, value):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO settings (key, value) VALUES (%s, %s)
+        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+    """, (key, json.dumps(value, ensure_ascii=False)))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 # ─────────────────────────────────────────────
-#  HELPERS
+#  FALLBACK MENU
 # ─────────────────────────────────────────────
 
 FALLBACK_MENU = {
@@ -78,19 +140,19 @@ FALLBACK_MENU = {
     "🌶 Настойки Sweet Pepper": [{"name": "Солёная Карамель", "description": "40 мл / 500 мл", "price": 150, "weight": "40 мл", "kbju": "", "photo": ""}],
 }
 
+# ─────────────────────────────────────────────
+#  HELPERS
+# ─────────────────────────────────────────────
+
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def load_menu():
-    if os.path.exists(MENU_FILE):
-        try:
-            with open(MENU_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if data:
-                    return data
-        except Exception:
-            pass
-    return FALLBACK_MENU
+    data = db_get("menu")
+    return data if data else FALLBACK_MENU
+
+def save_menu(menu):
+    db_set("menu", menu)
 
 def load_cafe_info():
     defaults = {
@@ -103,46 +165,58 @@ def load_cafe_info():
         "vk": "",
         "telegram": "https://t.me/SweetPepper1025bot",
     }
-    if os.path.exists(CAFE_INFO_FILE):
-        try:
-            with open(CAFE_INFO_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                defaults.update(data)
-        except Exception:
-            pass
+    data = db_get("cafe_info")
+    if data:
+        defaults.update(data)
     return defaults
 
 def save_cafe_info(info):
-    with open(CAFE_INFO_FILE, "w", encoding="utf-8") as f:
-        json.dump(info, f, ensure_ascii=False, indent=2)
+    db_set("cafe_info", info)
 
 def load_events():
-    if os.path.exists(EVENTS_FILE):
-        try:
-            with open(EVENTS_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return []
-
-def load_lunch():
-    if os.path.exists(LUNCH_FILE):
-        try:
-            with open(LUNCH_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if data:
-                    return data
-        except Exception:
-            pass
-    return {}
-
-def save_lunch(lunch):
-    with open(LUNCH_FILE, "w", encoding="utf-8") as f:
-        json.dump(lunch, f, ensure_ascii=False, indent=2)
+    data = db_get("events")
+    return data if data else []
 
 def save_events(events):
-    with open(EVENTS_FILE, "w", encoding="utf-8") as f:
-        json.dump(events, f, ensure_ascii=False, indent=2)
+    db_set("events", events)
+
+def load_lunch():
+    data = db_get("lunch")
+    return data if data else {}
+
+def save_lunch(lunch):
+    db_set("lunch", lunch)
+
+# ─────────────────────────────────────────────
+#  ЗАЩИТА ОТ БРУТФОРСА
+# ─────────────────────────────────────────────
+
+login_attempts = {}
+MAX_ATTEMPTS = 5
+BLOCK_MINUTES = 15
+
+def get_ip():
+    return request.headers.get("X-Forwarded-For", request.remote_addr)
+
+def is_blocked(ip):
+    if ip not in login_attempts:
+        return False
+    data = login_attempts[ip]
+    if data.get("blocked_until") and datetime.now() < data["blocked_until"]:
+        return True
+    if data.get("blocked_until") and datetime.now() >= data["blocked_until"]:
+        login_attempts.pop(ip, None)
+    return False
+
+def register_failed_attempt(ip):
+    if ip not in login_attempts:
+        login_attempts[ip] = {"attempts": 0, "blocked_until": None}
+    login_attempts[ip]["attempts"] += 1
+    if login_attempts[ip]["attempts"] >= MAX_ATTEMPTS:
+        login_attempts[ip]["blocked_until"] = datetime.now() + timedelta(minutes=BLOCK_MINUTES)
+
+def reset_attempts(ip):
+    login_attempts.pop(ip, None)
 
 def admin_required(f):
     @wraps(f)
@@ -151,6 +225,15 @@ def admin_required(f):
             return redirect(url_for("admin_login"))
         return f(*args, **kwargs)
     return decorated
+
+# ─────────────────────────────────────────────
+#  ИНИЦИАЛИЗАЦИЯ БД ПРИ СТАРТЕ
+# ─────────────────────────────────────────────
+
+try:
+    init_db()
+except Exception as e:
+    print(f"DB init error: {e}")
 
 # ─────────────────────────────────────────────
 #  PUBLIC ROUTES
@@ -164,11 +247,11 @@ def index():
     return render_template("index.html", menu=menu, info=info, events=events)
 
 @app.route("/lunch")
-@app.route("/lunch")
 def lunch():
     info = load_cafe_info()
     lunch_data = load_lunch()
     return render_template("lunch.html", info=info, lunch=lunch_data)
+
 @app.route("/api/menu")
 def api_menu():
     return jsonify(load_menu())
@@ -189,11 +272,9 @@ def api_events():
 def admin_login():
     ip = get_ip()
     error = None
-
     if is_blocked(ip):
         error = f"Слишком много попыток. Попробуйте через {BLOCK_MINUTES} минут."
         return render_template("admin_login.html", error=error)
-
     if request.method == "POST":
         if request.form.get("password") == ADMIN_PASSWORD:
             reset_attempts(ip)
@@ -205,10 +286,9 @@ def admin_login():
             register_failed_attempt(ip)
             attempts_left = MAX_ATTEMPTS - login_attempts.get(ip, {}).get("attempts", 0)
             if attempts_left <= 0:
-                error = f"Аккаунт заблокирован на {BLOCK_MINUTES} минут."
+                error = f"Заблокировано на {BLOCK_MINUTES} минут."
             else:
                 error = f"Неверный пароль. Осталось попыток: {attempts_left}"
-
     return render_template("admin_login.html", error=error)
 
 @app.route("/admin/logout")
@@ -275,12 +355,42 @@ def admin_update_dish():
             except Exception:
                 pass
         menu[category][idx][field] = value
-        with open(MENU_FILE, "w", encoding="utf-8") as f:
-            json.dump(menu, f, ensure_ascii=False, indent=2)
+        save_menu(menu)
+    return jsonify({"ok": True})
+
+@app.route("/admin/add_dish", methods=["POST"])
+@admin_required
+def admin_add_dish():
+    data = request.get_json()
+    menu = load_menu()
+    category = data.get("category")
+    dish = data.get("dish")
+    if category in menu and dish:
+        menu[category].append(dish)
+        save_menu(menu)
+    return jsonify({"ok": True})
+
+@app.route("/admin/delete_dish", methods=["POST"])
+@admin_required
+def admin_delete_dish():
+    data = request.get_json()
+    menu = load_menu()
+    category = data.get("category")
+    idx = data.get("idx")
+    if category in menu and 0 <= idx < len(menu[category]):
+        old_photo = menu[category][idx].get("photo", "")
+        if "cloudinary.com" in old_photo:
+            try:
+                public_id = "sweetpepper/" + old_photo.split("/sweetpepper/")[1].split(".")[0]
+                cloudinary.uploader.destroy(public_id)
+            except Exception:
+                pass
+        menu[category].pop(idx)
+        save_menu(menu)
     return jsonify({"ok": True})
 
 # ─────────────────────────────────────────────
-#  ЗАГРУЗКА ФОТО (Cloudinary)
+#  ФОТО
 # ─────────────────────────────────────────────
 
 @app.route("/admin/upload_photo", methods=["POST"])
@@ -292,15 +402,14 @@ def upload_photo():
     if file.filename == "":
         return jsonify({"ok": False, "error": "Файл не выбран"}), 400
     if not allowed_file(file.filename):
-        return jsonify({"ok": False, "error": "Недопустимый формат. Используй JPG, PNG, WEBP"}), 400
+        return jsonify({"ok": False, "error": "Недопустимый формат"}), 400
     try:
         result = cloudinary.uploader.upload(
             file,
             folder="sweetpepper",
             transformation=[{"quality": "auto", "fetch_format": "auto"}]
         )
-        url = result["secure_url"]
-        return jsonify({"ok": True, "url": url})
+        return jsonify({"ok": True, "url": result["secure_url"]})
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 500
 
@@ -320,42 +429,12 @@ def delete_photo():
             except Exception:
                 pass
         menu[category][idx]["photo"] = ""
-        with open(MENU_FILE, "w", encoding="utf-8") as f:
-            json.dump(menu, f, ensure_ascii=False, indent=2)
+        save_menu(menu)
     return jsonify({"ok": True})
 
-@app.route("/admin/add_dish", methods=["POST"])
-@admin_required
-def admin_add_dish():
-    data = request.get_json()
-    menu = load_menu()
-    category = data.get("category")
-    dish = data.get("dish")
-    if category in menu and dish:
-        menu[category].append(dish)
-        with open(MENU_FILE, "w", encoding="utf-8") as f:
-            json.dump(menu, f, ensure_ascii=False, indent=2)
-    return jsonify({"ok": True})
-
-@app.route("/admin/delete_dish", methods=["POST"])
-@admin_required
-def admin_delete_dish():
-    data = request.get_json()
-    menu = load_menu()
-    category = data.get("category")
-    idx = data.get("idx")
-    if category in menu and 0 <= idx < len(menu[category]):
-        old_photo = menu[category][idx].get("photo", "")
-        if "cloudinary.com" in old_photo:
-            try:
-                public_id = "sweetpepper/" + old_photo.split("/sweetpepper/")[1].split(".")[0]
-                cloudinary.uploader.destroy(public_id)
-            except Exception:
-                pass
-        menu[category].pop(idx)
-        with open(MENU_FILE, "w", encoding="utf-8") as f:
-            json.dump(menu, f, ensure_ascii=False, indent=2)
-    return jsonify({"ok": True})
+# ─────────────────────────────────────────────
+#  ЛАНЧИ
+# ─────────────────────────────────────────────
 
 @app.route("/admin/update_lunch_dish", methods=["POST"])
 @admin_required
@@ -387,7 +466,11 @@ def upload_lunch_photo():
     if not allowed_file(file.filename):
         return jsonify({"ok": False, "error": "Недопустимый формат"}), 400
     try:
-        result = cloudinary.uploader.upload(file, folder="sweetpepper/lunch", transformation=[{"quality": "auto", "fetch_format": "auto"}])
+        result = cloudinary.uploader.upload(
+            file,
+            folder="sweetpepper/lunch",
+            transformation=[{"quality": "auto", "fetch_format": "auto"}]
+        )
         return jsonify({"ok": True, "url": result["secure_url"]})
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 500
