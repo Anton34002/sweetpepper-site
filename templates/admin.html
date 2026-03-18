@@ -319,6 +319,7 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
   <div class="tabs">
     <button class="tab active" onclick="switchTab('settings', this)">⚙️ Настройки</button>
     <button class="tab" onclick="switchTab('menu', this)">🍽 Меню</button>
+    <button class="tab" onclick="switchTab('lunch', this)">🍽 Ланчи</button>
     <button class="tab" onclick="switchTab('events', this)">🎉 Мероприятия</button>
   </div>
 
@@ -402,6 +403,33 @@ main { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
     </div>
 
     <div id="dishesList"></div>
+  </div>
+
+  <!-- LUNCH TAB -->
+  <div class="tab-content" id="tab-lunch">
+    <h2 class="section-title">Редактирование ланчей</h2>
+    <div class="menu-top">
+      <select class="cat-select" id="lunchCatSelect" onchange="loadLunchDishes()">
+        {% for cat in lunch.keys() %}
+        <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-green" onclick="toggleAddLunchDish()">➕ Добавить блюдо</button>
+    </div>
+    <div class="add-dish-form" id="addLunchDishForm">
+      <h3>➕ Новое блюдо в ланч</h3>
+      <div class="add-fields">
+        <div class="field-group"><div class="field-label">Название *</div><input class="field-input" id="lnew-name" placeholder="Название блюда"></div>
+        <div class="field-group"><div class="field-label">Цена (₽) *</div><input class="field-input" id="lnew-price" type="number" placeholder="265"></div>
+        <div class="field-group"><div class="field-label">Выход</div><input class="field-input" id="lnew-weight" placeholder="300 г"></div>
+        <div class="field-group full"><div class="field-label">Описание / состав</div><input class="field-input" id="lnew-desc" placeholder="Подробный состав блюда"></div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:1rem">
+        <button class="btn btn-green" onclick="addLunchDish()">Добавить</button>
+        <button class="btn btn-outline" onclick="toggleAddLunchDish()">Отмена</button>
+      </div>
+    </div>
+    <div id="lunchDishesList"></div>
   </div>
 
   <!-- EVENTS TAB -->
@@ -786,3 +814,132 @@ loadDishes();
 </script>
 </body>
 </html>
+<script>
+// ─── LUNCH SECTION ───────────────────────────
+const LUNCH = {{ lunch | tojson }};
+
+function toggleAddLunchDish() {
+  const form = document.getElementById('addLunchDishForm');
+  form.classList.toggle('open');
+  if (form.classList.contains('open')) document.getElementById('lnew-name').focus();
+}
+
+function loadLunchDishes() {
+  const cat = document.getElementById('lunchCatSelect').value;
+  const dishes = LUNCH[cat] || [];
+  const list = document.getElementById('lunchDishesList');
+  if (!dishes.length) {
+    list.innerHTML = '<p style="color:var(--muted);padding:1rem 0">Нет блюд</p>';
+    return;
+  }
+  list.innerHTML = dishes.map((d, i) => `
+    <div class="dish-row" onclick="toggleLunchEditor('${escCat(cat)}', ${i})">
+      <div class="dish-row-top">
+        <div class="dish-row-name">${d.name}${d.photo ? ' <span class="dish-row-photo-badge">📸</span>' : ''}</div>
+        <div class="dish-row-price">${d.price} ₽</div>
+      </div>
+      <div class="dish-row-meta">${[d.weight, d.description].filter(Boolean).join(' · ')}</div>
+    </div>
+    <div class="dish-editor" id="leditor-${i}">
+      <div class="editor-title">✏️ Редактирование</div>
+      <div class="editor-fields">
+        <div class="field-group"><div class="field-label">Название</div><input class="field-input" id="lf-name-${i}" value="${esc(d.name||'')}"></div>
+        <div class="field-group"><div class="field-label">Цена (₽)</div><input class="field-input" id="lf-price-${i}" value="${d.price||''}"></div>
+        <div class="field-group"><div class="field-label">Выход</div><input class="field-input" id="lf-weight-${i}" value="${esc(d.weight||'')}"></div>
+        <div class="field-group full"><div class="field-label">Описание / состав</div><input class="field-input" id="lf-desc-${i}" value="${esc(d.description||'')}"></div>
+        <div class="photo-block">
+          <div class="photo-block-title">📸 Фото</div>
+          <div class="photo-current">
+            ${d.photo ? `<img src="${d.photo}" alt="фото" style="width:80px;height:60px;object-fit:cover;border:1px solid var(--border)">` : '<div class="photo-current-none">🍽</div>'}
+            <div>
+              ${d.photo
+                ? `<div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem">Фото загружено</div>
+                   <button class="btn btn-danger" style="font-size:0.7rem;padding:0.35rem 0.75rem" onclick="deleteLunchPhoto('${escCat(cat)}',${i})">🗑 Удалить</button>`
+                : '<div style="font-size:0.8rem;color:var(--muted)">Нет фото</div>'}
+            </div>
+          </div>
+          <div class="photo-upload-row">
+            <label class="photo-upload-label" for="lphoto-file-${i}">${d.photo ? '🔄 Заменить' : '📸 Загрузить'}</label>
+            <input class="photo-file-input" type="file" id="lphoto-file-${i}" accept="image/jpeg,image/png,image/webp" onchange="uploadLunchPhoto(this,'${escCat(cat)}',${i})">
+            <span class="photo-uploading" id="lphoto-uploading-${i}">⏳ Загружаю...</span>
+          </div>
+        </div>
+      </div>
+      <hr class="divider">
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        <button class="btn btn-red" onclick="saveLunchDish('${escCat(cat)}',${i})">💾 Сохранить</button>
+        <button class="btn btn-outline" onclick="document.getElementById('leditor-${i}').classList.remove('open')">Отмена</button>
+        <button class="btn btn-danger" style="margin-left:auto" onclick="deleteLunchDish('${escCat(cat)}',${i})">🗑 Удалить</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleLunchEditor(cat, idx) {
+  const ed = document.getElementById('leditor-' + idx);
+  if (ed.classList.contains('open')) { ed.classList.remove('open'); }
+  else {
+    document.querySelectorAll('.dish-editor.open').forEach(e => e.classList.remove('open'));
+    ed.classList.add('open');
+    ed.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+async function saveLunchDish(cat, idx) {
+  for (const field of ['name','price','weight','description']) {
+    const val = document.getElementById(`lf-${field}-${idx}`).value;
+    await fetch('/admin/update_lunch_dish', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,idx,field,value:val})});
+    LUNCH[cat][idx][field] = field === 'price' ? parseInt(val) : val;
+  }
+  showToast('✅ Блюдо сохранено!');
+  loadLunchDishes();
+}
+
+async function uploadLunchPhoto(input, cat, idx) {
+  const file = input.files[0]; if (!file) return;
+  const uploading = document.getElementById(`lphoto-uploading-${idx}`);
+  uploading.style.display = 'inline';
+  const formData = new FormData(); formData.append('file', file);
+  try {
+    const r = await fetch('/admin/upload_lunch_photo', {method:'POST',body:formData});
+    const data = await r.json();
+    if (data.ok) {
+      await fetch('/admin/update_lunch_dish', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,idx,field:'photo',value:data.url})});
+      LUNCH[cat][idx].photo = data.url;
+      showToast('✅ Фото загружено!');
+      loadLunchDishes();
+    } else { showToast('❌ ' + (data.error||'Ошибка'), true); }
+  } catch(e) { showToast('❌ Ошибка', true); }
+  finally { uploading.style.display = 'none'; }
+}
+
+async function deleteLunchPhoto(cat, idx) {
+  if (!confirm('Удалить фото?')) return;
+  await fetch('/admin/update_lunch_dish', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,idx,field:'photo',value:''})});
+  LUNCH[cat][idx].photo = '';
+  showToast('Фото удалено');
+  loadLunchDishes();
+}
+
+async function addLunchDish() {
+  const cat = document.getElementById('lunchCatSelect').value;
+  const name = document.getElementById('lnew-name').value.trim();
+  const price = document.getElementById('lnew-price').value.trim();
+  if (!name || !price) { showToast('Введите название и цену', true); return; }
+  const dish = {name, price:parseInt(price), weight:document.getElementById('lnew-weight').value.trim(), description:document.getElementById('lnew-desc').value.trim(), photo:''};
+  const r = await fetch('/admin/add_lunch_dish', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,dish})});
+  if ((await r.json()).ok) {
+    LUNCH[cat].push(dish);
+    ['lnew-name','lnew-price','lnew-weight','lnew-desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('addLunchDishForm').classList.remove('open');
+    showToast('✅ Блюдо добавлено!');
+    loadLunchDishes();
+  }
+}
+
+async function deleteLunchDish(cat, idx) {
+  if (!confirm(`Удалить «${LUNCH[cat][idx].name}»?`)) return;
+  const r = await fetch('/admin/delete_lunch_dish', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,idx})});
+  if ((await r.json()).ok) { LUNCH[cat].splice(idx,1); showToast('Блюдо удалено'); loadLunchDishes(); }
+}
+</script>
