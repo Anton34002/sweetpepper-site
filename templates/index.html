@@ -624,7 +624,7 @@ footer a { color: var(--red); text-decoration: none; }
     <a href="#menu" class="btn-primary">Смотреть меню</a>
     <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:0.75rem;flex-wrap:wrap">
       <a href="/lunch" class="btn-outline" style="margin-left:0">🍽 Ланчи по будням</a>
-      {% if info.vk %}<a href="{{ info.vk }}" class="btn-outline" target="_blank" style="margin-left:0">ВКонтакте</a>{% endif %}
+      <a href="https://vk.ru/barsweetpepper" class="btn-outline" target="_blank" style="margin-left:0">ВКонтакте</a>
     </div>
   </div>
   <div class="hero-scroll">
@@ -714,7 +714,7 @@ footer a { color: var(--red); text-decoration: none; }
       <div class="info-block">
         <div class="info-icon">📍</div>
         <div class="info-label">Адрес</div>
-        <div class="info-value">{{ info.address }}</div>
+        <div class="info-value"><a href="https://yandex.ru/maps/?text={{ info.address }}" target="_blank" style="color:var(--red);text-decoration:none;">{{ info.address }} →</a></div>
       </div>
       <div class="info-block">
         <div class="info-icon">🕐</div>
