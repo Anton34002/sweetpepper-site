@@ -633,9 +633,23 @@ def admin_delete_lunch_dish():
 def admin_reload_menu():
     try:
         with open("menu.json", "r", encoding="utf-8") as f:
-            menu_data = json.load(f)
-        db_set("menu", menu_data)
-        return jsonify({"ok": True, "message": "Меню обновлено!"})
+            new_menu = json.load(f)
+
+        # Берём текущее меню из базы чтобы сохранить фото
+        current_menu = load_menu()
+
+        # Переносим фото из текущего меню в новое
+        for cat, dishes in new_menu.items():
+            if cat in current_menu:
+                for dish in dishes:
+                    # Ищем блюдо с таким же названием в текущем меню
+                    for current_dish in current_menu[cat]:
+                        if current_dish["name"] == dish["name"] and current_dish.get("photo"):
+                            dish["photo"] = current_dish["photo"]
+                            break
+
+        db_set("menu", new_menu)
+        return jsonify({"ok": True, "message": "Меню обновлено, фото сохранены!"})
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)})
 
