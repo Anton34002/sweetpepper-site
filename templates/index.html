@@ -622,13 +622,10 @@ footer a { color: var(--red); text-decoration: none; }
       {% if info.phone %}<span>📞 {{ info.phone }}</span>{% endif %}
     </div>
     <a href="#menu" class="btn-primary">Смотреть меню</a>
-    <a href="/lunch" class="btn-outline" style="margin-left:0;margin-top:0.75rem">🍽 Ланчи по будням</a>
-    {% if info.telegram %}
     <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:0.75rem;flex-wrap:wrap">
+      <a href="/lunch" class="btn-outline" style="margin-left:0">🍽 Ланчи по будням</a>
       {% if info.vk %}<a href="{{ info.vk }}" class="btn-outline" target="_blank" style="margin-left:0">ВКонтакте</a>{% endif %}
-      {% if info.telegram %}<a href="{{ info.telegram }}" class="btn-outline" target="_blank" style="margin-left:0">Telegram</a>{% endif %}
     </div>
-    {% endif %}
   </div>
   <div class="hero-scroll">
     <div class="scroll-line"></div>
