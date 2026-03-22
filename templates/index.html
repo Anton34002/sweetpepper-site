@@ -4,8 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sweet Pepper — Кафе-бар в Ярославле</title>
+
+<!-- SEO -->
+<meta name="description" content="Sweet Pepper — уютный кафе-бар в Ярославле. Авторские коктейли, завтраки, ланчи, бейглы и пасты. {{ info.address }}. {{ info.hours }}.">
+<meta name="keywords" content="кафе Ярославль, бар Ярославль, Sweet Pepper, коктейли Ярославль, завтраки Ярославль, ланч Ярославль">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://web-production-011d1.up.railway.app/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="restaurant">
+<meta property="og:title" content="Sweet Pepper — Кафе-бар в Ярославле">
+<meta property="og:description" content="Уютный кафе-бар в Ярославле. Авторские коктейли, завтраки, ланчи. {{ info.address }}.">
+<meta property="og:image" content="https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/jefl3wrxfcqjmdcb6wm5.png">
+<meta property="og:url" content="https://web-production-011d1.up.railway.app/">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Sweet Pepper">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sweet Pepper — Кафе-бар в Ярославле">
+<meta name="twitter:description" content="Уютный кафе-бар в Ярославле. Авторские коктейли, завтраки, ланчи.">
+<meta name="twitter:image" content="https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/jefl3wrxfcqjmdcb6wm5.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
 :root {
   --red: #c0392b;
@@ -28,7 +51,6 @@ body {
   font-weight: 400;
   overflow-x: hidden;
 }
-
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
@@ -260,10 +282,7 @@ nav.scrolled {
   transition: all 0.2s;
   white-space: nowrap;
 }
-.cat-btn:hover {
-  border-color: var(--red);
-  color: var(--red);
-}
+.cat-btn:hover { border-color: var(--red); color: var(--red); }
 .cat-btn.active {
   background: var(--red);
   border-color: var(--red);
@@ -310,9 +329,7 @@ nav.scrolled {
   justify-content: center;
   font-size: 3rem;
 }
-.dish-body {
-  padding: 1.25rem;
-}
+.dish-body { padding: 1.25rem; }
 .dish-name {
   font-family: 'Playfair Display', serif;
   font-size: 1rem;
@@ -461,10 +478,7 @@ nav.scrolled {
   background: var(--dark);
   padding: 5rem 2rem;
 }
-#events .inner-events {
-  max-width: 1200px;
-  margin: 0 auto;
-}
+#events .inner-events { max-width: 1200px; margin: 0 auto; }
 #events .section-label { color: var(--red); }
 #events .section-title { color: #f7f4f0; }
 .events-grid {
@@ -480,12 +494,7 @@ nav.scrolled {
   border: 1px solid rgba(255,255,255,0.06);
 }
 .event-card:hover { transform: translateY(-4px); }
-.event-photo {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  display: block;
-}
+.event-photo { width: 100%; height: 220px; object-fit: cover; display: block; }
 .event-photo-placeholder {
   width: 100%;
   height: 220px;
@@ -521,10 +530,7 @@ nav.scrolled {
 }
 
 /* ABOUT */
-#about {
-  background: var(--bg2);
-  padding: 5rem 2rem;
-}
+#about { background: var(--bg2); padding: 5rem 2rem; }
 #about .inner-about { max-width: 1200px; margin: 0 auto; }
 .info-grid {
   display: grid;
@@ -532,11 +538,7 @@ nav.scrolled {
   gap: 1rem;
   margin-bottom: 2rem;
 }
-.info-block {
-  background: var(--bg3);
-  padding: 1.75rem;
-  border-radius: 12px;
-}
+.info-block { background: var(--bg3); padding: 1.75rem; border-radius: 12px; }
 .info-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
 .info-label {
   font-size: 0.65rem;
@@ -595,6 +597,7 @@ footer a { color: var(--red); text-decoration: none; }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 </style>
 </head>
+
 <body>
 
 <!-- NAV -->
@@ -613,7 +616,7 @@ footer a { color: var(--red); text-decoration: none; }
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-content">
-    <img src="https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/jefl3wrxfcqjmdcb6wm5.png" alt="Sweet Pepper" style="width:120px;height:120px;object-fit:contain;margin-bottom:1.5rem;display:block;margin-left:auto;margin-right:auto;animation:float 4s ease-in-out infinite;">
+    <img src="https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/jefl3wrxfcqjmdcb6wm5.png" alt="Sweet Pepper логотип" style="width:120px;height:120px;object-fit:contain;margin-bottom:1.5rem;display:block;margin-left:auto;margin-right:auto;animation:float 4s ease-in-out infinite;">
     <h1>Sweet<br><span>Pepper</span></h1>
     <p class="hero-sub">Кафе-бар · Ярославль</p>
     <div class="hero-info">
@@ -657,7 +660,7 @@ footer a { color: var(--red); text-decoration: none; }
     {% for dish in dishes %}
     <div class="dish-card" onclick="openDish('{{ cat }}', {{ loop.index0 }})">
       {% if dish.photo %}
-      <img class="dish-photo" src="{{ dish.photo }}" alt="{{ dish.name }}">
+      <img class="dish-photo" src="{{ dish.photo }}" alt="{{ dish.name }}" loading="lazy">
       {% else %}
       <div class="dish-photo-placeholder">🍽</div>
       {% endif %}
@@ -685,7 +688,7 @@ footer a { color: var(--red); text-decoration: none; }
       {% for event in events %}
       <div class="event-card fade-in">
         {% if event.photo %}
-        <img class="event-photo" src="{{ event.photo }}" alt="{{ event.title }}">
+        <img class="event-photo" src="{{ event.photo }}" alt="{{ event.title }}" loading="lazy">
         {% else %}
         <div class="event-photo-placeholder">🎉</div>
         {% endif %}
@@ -780,31 +783,27 @@ function showCat(idx, btn) {
 
 function openDish(cat, idx) {
   const dish = MENU[cat][idx];
-  // Трекинг просмотра блюда
   fetch('/api/track_dish', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({category: cat, dish_name: dish.name})
   }).catch(() => {});
+
   const overlay = document.getElementById('modalOverlay');
   const photoWrap = document.getElementById('modalPhotoWrap');
-
   if (dish.photo) {
     photoWrap.innerHTML = `<img class="modal-photo" src="${dish.photo}" alt="${dish.name}">`;
   } else {
     photoWrap.innerHTML = `<div class="modal-photo-placeholder">🍽</div>`;
   }
-
   document.getElementById('modalCat').textContent = cat;
   document.getElementById('modalName').textContent = dish.name;
   document.getElementById('modalDesc').textContent = dish.description || '';
-
   let details = '';
   if (dish.weight) details += `<div class="modal-detail"><div class="modal-detail-label">Выход</div><div class="modal-detail-value">${dish.weight}</div></div>`;
   if (dish.kbju) details += `<div class="modal-detail"><div class="modal-detail-label">КБЖУ</div><div class="modal-detail-value">${dish.kbju}</div></div>`;
   document.getElementById('modalDetails').innerHTML = details;
   document.getElementById('modalDetails').style.display = (dish.weight || dish.kbju) ? 'grid' : 'none';
-
   document.getElementById('modalPrice').innerHTML = `${dish.price} <span>₽</span>`;
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -833,5 +832,6 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 </script>
+
 </body>
 </html>
