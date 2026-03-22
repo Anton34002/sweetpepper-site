@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 import json
 import os
@@ -10,20 +11,21 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "sweetpepper_secret_2025")
+app.secret_key = os.environ.get("SECRET_KEY")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "pepper2025")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:vFRwTXvxZWlPlriIkChyNDnbgNxpsRSD@interchange.proxy.rlwy.net:24304/railway")
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "dqxc3rfml"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY", "735795974666715"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "CvGvLny8_D8HPdGTv2C1oZO28sU")
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET")
 )
 
 # ─────────────────────────────────────────────
-#  DATABASE
+# DATABASE
 # ─────────────────────────────────────────────
 
 def get_db():
@@ -46,7 +48,6 @@ def init_db():
     # Проверяем есть ли данные
     cur.execute("SELECT key FROM settings WHERE key = 'menu'")
     if not cur.fetchone():
-        # Загружаем начальное меню из файла если есть
         menu_data = {}
         if os.path.exists("menu.json"):
             try:
@@ -57,7 +58,7 @@ def init_db():
         if not menu_data:
             menu_data = FALLBACK_MENU
         cur.execute("INSERT INTO settings (key, value) VALUES (%s, %s)",
-                   ("menu", json.dumps(menu_data, ensure_ascii=False)))
+                    ("menu", json.dumps(menu_data, ensure_ascii=False)))
 
     cur.execute("SELECT key FROM settings WHERE key = 'lunch'")
     if not cur.fetchone():
@@ -69,7 +70,7 @@ def init_db():
             except:
                 pass
         cur.execute("INSERT INTO settings (key, value) VALUES (%s, %s)",
-                   ("lunch", json.dumps(lunch_data, ensure_ascii=False)))
+                    ("lunch", json.dumps(lunch_data, ensure_ascii=False)))
 
     cur.execute("SELECT key FROM settings WHERE key = 'events'")
     if not cur.fetchone():
@@ -81,7 +82,7 @@ def init_db():
             except:
                 pass
         cur.execute("INSERT INTO settings (key, value) VALUES (%s, %s)",
-                   ("events", json.dumps(events_data, ensure_ascii=False)))
+                    ("events", json.dumps(events_data, ensure_ascii=False)))
 
     cur.execute("SELECT key FROM settings WHERE key = 'cafe_info'")
     if not cur.fetchone():
@@ -93,7 +94,7 @@ def init_db():
             except:
                 pass
         cur.execute("INSERT INTO settings (key, value) VALUES (%s, %s)",
-                   ("cafe_info", json.dumps(info_data, ensure_ascii=False)))
+                    ("cafe_info", json.dumps(info_data, ensure_ascii=False)))
 
     # Таблица просмотров страниц
     cur.execute("""
@@ -136,33 +137,12 @@ def db_set(key, value):
         INSERT INTO settings (key, value) VALUES (%s, %s)
         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
     """, (key, json.dumps(value, ensure_ascii=False)))
-    # Таблица просмотров страниц
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS page_views (
-            id SERIAL PRIMARY KEY,
-            date DATE NOT NULL DEFAULT CURRENT_DATE,
-            count INTEGER NOT NULL DEFAULT 0,
-            UNIQUE(date)
-        )
-    """)
-
-    # Таблица просмотров блюд
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS dish_views (
-            id SERIAL PRIMARY KEY,
-            category TEXT NOT NULL,
-            dish_name TEXT NOT NULL,
-            count INTEGER NOT NULL DEFAULT 0,
-            UNIQUE(category, dish_name)
-        )
-    """)
-
     conn.commit()
     cur.close()
     conn.close()
 
 # ─────────────────────────────────────────────
-#  FALLBACK MENU
+# FALLBACK MENU
 # ─────────────────────────────────────────────
 
 FALLBACK_MENU = {
@@ -183,7 +163,7 @@ FALLBACK_MENU = {
 }
 
 # ─────────────────────────────────────────────
-#  АНАЛИТИКА
+# АНАЛИТИКА
 # ─────────────────────────────────────────────
 
 def track_page_view():
@@ -219,7 +199,6 @@ def get_analytics():
         conn = get_db()
         cur = conn.cursor()
 
-        # Посещаемость за последние 30 дней
         cur.execute("""
             SELECT date::text, count FROM page_views
             WHERE date >= CURRENT_DATE - INTERVAL '30 days'
@@ -227,24 +206,20 @@ def get_analytics():
         """)
         views_by_day = [dict(r) for r in cur.fetchall()]
 
-        # Топ 10 блюд
         cur.execute("""
             SELECT category, dish_name, count FROM dish_views
             ORDER BY count DESC LIMIT 10
         """)
         top_dishes = [dict(r) for r in cur.fetchall()]
 
-        # Итого за сегодня
         cur.execute("SELECT count FROM page_views WHERE date = CURRENT_DATE")
         row = cur.fetchone()
         today = row["count"] if row else 0
 
-        # Итого за 7 дней
         cur.execute("SELECT SUM(count) FROM page_views WHERE date >= CURRENT_DATE - INTERVAL '7 days'")
         row = cur.fetchone()
         week = row["sum"] if row and row["sum"] else 0
 
-        # Итого за 30 дней
         cur.execute("SELECT SUM(count) FROM page_views WHERE date >= CURRENT_DATE - INTERVAL '30 days'")
         row = cur.fetchone()
         month = row["sum"] if row and row["sum"] else 0
@@ -262,7 +237,7 @@ def get_analytics():
         return {"views_by_day": [], "top_dishes": [], "today": 0, "week": 0, "month": 0}
 
 # ─────────────────────────────────────────────
-#  HELPERS
+# HELPERS
 # ─────────────────────────────────────────────
 
 def allowed_file(filename):
@@ -309,7 +284,7 @@ def save_lunch(lunch):
     db_set("lunch", lunch)
 
 # ─────────────────────────────────────────────
-#  ЗАЩИТА ОТ БРУТФОРСА
+# ЗАЩИТА ОТ БРУТФОРСА
 # ─────────────────────────────────────────────
 
 login_attempts = {}
@@ -348,7 +323,7 @@ def admin_required(f):
     return decorated
 
 # ─────────────────────────────────────────────
-#  ИНИЦИАЛИЗАЦИЯ БД ПРИ СТАРТЕ
+# ИНИЦИАЛИЗАЦИЯ БД ПРИ СТАРТЕ
 # ─────────────────────────────────────────────
 
 try:
@@ -357,7 +332,7 @@ except Exception as e:
     print(f"DB init error: {e}")
 
 # ─────────────────────────────────────────────
-#  PUBLIC ROUTES
+# PUBLIC ROUTES
 # ─────────────────────────────────────────────
 
 @app.route("/")
@@ -393,16 +368,18 @@ def api_events():
     return jsonify(load_events())
 
 # ─────────────────────────────────────────────
-#  ADMIN ROUTES
+# ADMIN ROUTES
 # ─────────────────────────────────────────────
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     ip = get_ip()
     error = None
+
     if is_blocked(ip):
         error = f"Слишком много попыток. Попробуйте через {BLOCK_MINUTES} минут."
         return render_template("admin_login.html", error=error)
+
     if request.method == "POST":
         if request.form.get("password") == ADMIN_PASSWORD:
             reset_attempts(ip)
@@ -417,6 +394,7 @@ def admin_login():
                 error = f"Заблокировано на {BLOCK_MINUTES} минут."
             else:
                 error = f"Неверный пароль. Осталось попыток: {attempts_left}"
+
     return render_template("admin_login.html", error=error)
 
 @app.route("/admin/logout")
@@ -519,7 +497,7 @@ def admin_delete_dish():
     return jsonify({"ok": True})
 
 # ─────────────────────────────────────────────
-#  ФОТО
+# ФОТО
 # ─────────────────────────────────────────────
 
 @app.route("/admin/upload_photo", methods=["POST"])
@@ -562,7 +540,7 @@ def delete_photo():
     return jsonify({"ok": True})
 
 # ─────────────────────────────────────────────
-#  ЛАНЧИ
+# ЛАНЧИ
 # ─────────────────────────────────────────────
 
 @app.route("/admin/update_lunch_dish", methods=["POST"])
@@ -634,20 +612,14 @@ def admin_reload_menu():
     try:
         with open("menu.json", "r", encoding="utf-8") as f:
             new_menu = json.load(f)
-
-        # Берём текущее меню из базы чтобы сохранить фото
         current_menu = load_menu()
-
-        # Переносим фото из текущего меню в новое
         for cat, dishes in new_menu.items():
             if cat in current_menu:
                 for dish in dishes:
-                    # Ищем блюдо с таким же названием в текущем меню
                     for current_dish in current_menu[cat]:
                         if current_dish["name"] == dish["name"] and current_dish.get("photo"):
                             dish["photo"] = current_dish["photo"]
                             break
-
         db_set("menu", new_menu)
         return jsonify({"ok": True, "message": "Меню обновлено, фото сохранены!"})
     except Exception as e:
