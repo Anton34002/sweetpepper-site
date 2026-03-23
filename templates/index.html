@@ -9,14 +9,14 @@
 <meta name="description" content="Sweet Pepper — уютный кафе-бар в Ярославле. Авторские коктейли, завтраки, ланчи, бейглы и пасты. {{ info.address }}. {{ info.hours }}.">
 <meta name="keywords" content="кафе Ярославль, бар Ярославль, Sweet Pepper, коктейли Ярославль, завтраки Ярославль, ланч Ярославль">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://web-production-011d1.up.railway.app/">
+<link rel="canonical" href="https://www.sweetpepper-bar.ru/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="restaurant">
 <meta property="og:title" content="Sweet Pepper — Кафе-бар в Ярославле">
 <meta property="og:description" content="Уютный кафе-бар в Ярославле. Авторские коктейли, завтраки, ланчи. {{ info.address }}.">
 <meta property="og:image" content="https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/jefl3wrxfcqjmdcb6wm5.png">
-<meta property="og:url" content="https://web-production-011d1.up.railway.app/">
+<meta property="og:url" content="https://www.sweetpepper-bar.ru/">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:site_name" content="Sweet Pepper">
 
@@ -299,6 +299,35 @@ nav.scrolled {
   max-width: 1200px;
   margin: 0 auto;
 }
+
+/* COMPACT LIST (для алкоголя без фото) */
+.dishes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.dish-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dish-row-item:first-child { border-radius: 8px 8px 0 0; }
+.dish-row-item:last-child { border-radius: 0 0 8px 8px; border-bottom: none; }
+.dish-row-item:hover { background: var(--bg3); }
+.dish-row-left { flex: 1; }
+.dish-row-name { font-size: 0.95rem; font-weight: 500; color: var(--dark); margin-bottom: 0.15rem; }
+.dish-row-desc { font-size: 0.75rem; color: var(--text-muted); }
+.dish-row-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; margin-left: 1rem; }
+.dish-row-weight { font-size: 0.72rem; color: var(--text-muted); background: var(--bg3); padding: 0.2rem 0.5rem; border-radius: 100px; }
+.dish-row-price { font-size: 1rem; font-weight: 700; color: var(--red); white-space: nowrap; }
 
 /* DISH CARD */
 .dish-card {
@@ -655,7 +684,24 @@ footer a { color: var(--red); text-decoration: none; }
     </div>
   </div>
 
+  {% set compact_cats = ['🥃 Виски', '🍸 Джин', '🥃 Ром и кашаса', '🥃 Водка', '🥃 Коньяк и бренди', '🌵 Текила и мескаль', '🍷 Вино', '🍺 Пиво', '🍶 Ликёры и вермуты'] %}
   {% for cat, dishes in menu.items() %}
+  {% if cat in compact_cats %}
+  <div class="dishes-list cat-section" id="cat-{{ loop.index }}" style="{% if not loop.first %}display:none{% endif %}">
+    {% for dish in dishes %}
+    <div class="dish-row-item" onclick="openDish('{{ cat }}', {{ loop.index0 }})">
+      <div class="dish-row-left">
+        <div class="dish-row-name">{{ dish.name }}</div>
+        {% if dish.description %}<div class="dish-row-desc">{{ dish.description }}</div>{% endif %}
+      </div>
+      <div class="dish-row-right">
+        {% if dish.weight %}<div class="dish-row-weight">{{ dish.weight }}</div>{% endif %}
+        <div class="dish-row-price">{{ dish.price }} ₽</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
   <div class="dishes-grid cat-section" id="cat-{{ loop.index }}" style="{% if not loop.first %}display:none{% endif %}">
     {% for dish in dishes %}
     <div class="dish-card" onclick="openDish('{{ cat }}', {{ loop.index0 }})">
@@ -675,6 +721,7 @@ footer a { color: var(--red); text-decoration: none; }
     </div>
     {% endfor %}
   </div>
+  {% endif %}
   {% endfor %}
 </div>
 
