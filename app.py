@@ -363,13 +363,13 @@ def lunch():
 @app.route("/robots.txt")
 def robots():
     return Response(
-        "User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://web-production-011d1.up.railway.app/sitemap.xml\n",
+        "User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://www.sweetpepper-bar.ru/sitemap.xml\n",
         mimetype="text/plain"
     )
 
 @app.route("/sitemap.xml")
 def sitemap():
-    base = "https://web-production-011d1.up.railway.app"
+    base = "https://www.sweetpepper-bar.ru"
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     xml += f'  <url><loc>{base}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n'
