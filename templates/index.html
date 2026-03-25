@@ -637,7 +637,8 @@ footer a { color: var(--red); text-decoration: none; }
     <li><a href="/lunch">Ланчи</a></li>
     <li><a href="#events">Мероприятия</a></li>
     <li><a href="#about">О нас</a></li>
-    <li><a href="{{ info.telegram }}" class="nav-tg" target="_blank">Бот в Telegram</a></li>
+    <li><a href="#reviews">Отзывы</a></li>
+
   </ul>
 </nav>
 
@@ -657,6 +658,7 @@ footer a { color: var(--red); text-decoration: none; }
     <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:0.75rem;flex-wrap:wrap">
       <a href="/lunch" class="btn-outline" style="margin-left:0">🍽 Ланчи по будням</a>
       <a href="https://vk.ru/barsweetpepper" class="btn-outline" target="_blank" style="margin-left:0">ВКонтакте</a>
+      <a href="#reviews" class="btn-outline" style="margin-left:0">⭐ Отзывы</a>
     </div>
   </div>
   <div class="hero-scroll">
@@ -780,15 +782,41 @@ footer a { color: var(--red); text-decoration: none; }
       {% endif %}
     </div>
     <div class="socials fade-in">
-      {% if info.telegram %}
-      <a href="{{ info.telegram }}" class="social-btn tg" target="_blank">✈️ Telegram бот</a>
-      {% endif %}
+
       {% if info.vk %}
       <a href="{{ info.vk }}" class="social-btn" target="_blank">ВКонтакте</a>
       {% endif %}
       {% if info.instagram %}
       <a href="{{ info.instagram }}" class="social-btn" target="_blank">Instagram</a>
       {% endif %}
+    </div>
+  </div>
+</section>
+
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div style="max-width:1200px;margin:0 auto;padding:5rem 2rem;">
+    <p class="section-label fade-in" style="color:var(--red)">Мнения гостей</p>
+    <h2 class="section-title fade-in">Оставьте <em>отзыв</em></h2>
+    <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:2rem;" class="fade-in">Ваше мнение помогает нам становиться лучше и помогает другим гостям найти нас.</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;" class="fade-in">
+      <a href="https://yandex.ru/maps/org/sweet_pepper/237019392845?si=2cw7m5g9t57738az56p0qahggw" target="_blank"
+        style="display:inline-flex;align-items:center;gap:0.75rem;background:var(--bg2);border:1.5px solid var(--border);padding:1rem 1.5rem;border-radius:12px;text-decoration:none;color:var(--text);transition:all 0.2s;font-size:0.9rem;font-weight:500;">
+        <span style="font-size:1.5rem;">🗺</span>
+        <div>
+          <div style="font-weight:600;">Яндекс Карты</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">Оставить отзыв</div>
+        </div>
+      </a>
+      <a href="https://2gis.ru/yaroslavl/firm/70000001006986694/tab/reviews" target="_blank"
+        style="display:inline-flex;align-items:center;gap:0.75rem;background:var(--bg2);border:1.5px solid var(--border);padding:1rem 1.5rem;border-radius:12px;text-decoration:none;color:var(--text);transition:all 0.2s;font-size:0.9rem;font-weight:500;">
+        <span style="font-size:1.5rem;">📍</span>
+        <div>
+          <div style="font-weight:600;">2GIS</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">Оставить отзыв</div>
+        </div>
+      </a>
     </div>
   </div>
 </section>
