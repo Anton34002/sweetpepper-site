@@ -1,5 +1,4 @@
-{
-  "🍳 Завтраки": [
+"🍳 Завтраки": [
     {
       "name": "Овсянка с топпингом",
       "description": "280 г",
@@ -13,7 +12,7 @@
       "description": "320 г",
       "price": 265,
       "weight": "320 г",
-      "kbju": "",
+      "kbju": "Б:9.4 · Ж:28.9 · У:58.4 · 531 ккал",
       "photo": ""
     },
     {
@@ -21,7 +20,7 @@
       "description": "145 г, с топпингом или вареньем",
       "price": 265,
       "weight": "145 г",
-      "kbju": "",
+      "kbju": "Б:16.8 · Ж:43.2 · У:18.9 · 531 ккал",
       "photo": ""
     },
     {
@@ -29,7 +28,7 @@
       "description": "210 г, с топпингом или вареньем",
       "price": 345,
       "weight": "210 г",
-      "kbju": "",
+      "kbju": "Б:25.0 · Ж:62.3 · У:27.3 · 770 ккал",
       "photo": ""
     },
     {
@@ -45,7 +44,7 @@
       "description": "180 г, с вареньем",
       "price": 195,
       "weight": "180 г",
-      "kbju": "",
+      "kbju": "Б:8.3 · Ж:9.1 · У:4.7 · 134 ккал",
       "photo": ""
     },
     {
@@ -53,7 +52,7 @@
       "description": "270 г, с вареньем",
       "price": 285,
       "weight": "270 г",
-      "kbju": "",
+      "kbju": "Б:12.4 · Ж:13.6 · У:6.8 · 199 ккал",
       "photo": ""
     },
     {
@@ -77,7 +76,7 @@
       "description": "180 г, со сливочным сыром",
       "price": 425,
       "weight": "180 г",
-      "kbju": "",
+      "kbju": "Б:9.0 · Ж:34.2 · У:4.7 · 365 ккал",
       "photo": ""
     },
     {
@@ -117,7 +116,7 @@
       "description": "220 г",
       "price": 325,
       "weight": "220 г",
-      "kbju": "",
+      "kbju": "Б:13.6 · Ж:21.6 · У:11.9 · 296 ккал",
       "photo": ""
     },
     {
@@ -125,7 +124,7 @@
       "description": "280 г, глазунья с овощами, тостами и котлетой",
       "price": 345,
       "weight": "280 г",
-      "kbju": "",
+      "kbju": "Б:6.0 · Ж:43.0 · У:36.7 · 558 ккал",
       "photo": ""
     },
     {
@@ -133,7 +132,7 @@
       "description": "180 г, с зеленью",
       "price": 245,
       "weight": "180 г",
-      "kbju": "",
+      "kbju": "Б:6.0 · Ж:22.7 · У:29.7 · 347 ккал",
       "photo": ""
     },
     {
@@ -141,7 +140,7 @@
       "description": "190 г",
       "price": 295,
       "weight": "190 г",
-      "kbju": "",
+      "kbju": "Б:19.8 · Ж:49.2 · У:26.7 · 629 ккал",
       "photo": ""
     },
     {
@@ -149,7 +148,7 @@
       "description": "250 г",
       "price": 355,
       "weight": "250 г",
-      "kbju": "",
+      "kbju": "Б:24.0 · Ж:53.9 · У:26.9 · 689 ккал",
       "photo": ""
     },
     {
@@ -157,7 +156,7 @@
       "description": "230 г",
       "price": 315,
       "weight": "230 г",
-      "kbju": "",
+      "kbju": "Б:14.5 · Ж:29.9 · У:28.5 · 440 ккал",
       "photo": ""
     },
     {
@@ -165,7 +164,7 @@
       "description": "250 г",
       "price": 425,
       "weight": "250 г",
-      "kbju": "",
+      "kbju": "Б:6.2 · Ж:23.9 · У:29.7 · 358 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/pwcjao7ss0skuf1xpp4p.jpg"
     }
   ],
@@ -175,7 +174,7 @@
       "description": "130 г, с ягодным соусом",
       "price": 335,
       "weight": "130 г",
-      "kbju": "",
+      "kbju": "Б:18.3 · Ж:36.7 · У:27.9 · 515 ккал",
       "photo": ""
     },
     {
@@ -183,7 +182,7 @@
       "description": "180 г",
       "price": 325,
       "weight": "180 г",
-      "kbju": "",
+      "kbju": "Б:7.0 · Ж:33.8 · У:51.3 · 538 ккал",
       "photo": ""
     },
     {
@@ -199,7 +198,7 @@
       "description": "130 г",
       "price": 295,
       "weight": "130 г",
-      "kbju": "",
+      "kbju": "Б:33.3 · Ж:19.6 · У:4.4 · 327 ккал",
       "photo": ""
     },
     {
@@ -207,7 +206,7 @@
       "description": "250 г",
       "price": 245,
       "weight": "250 г",
-      "kbju": "",
+      "kbju": "Б:12.0 · Ж:2.3 · У:70.1 · 349 ккал",
       "photo": ""
     },
     {
@@ -215,7 +214,7 @@
       "description": "200 г, с сыром или соусом песто",
       "price": 255,
       "weight": "200 г",
-      "kbju": "",
+      "kbju": "Б:12.8 · Ж:24.4 · У:29.3 · 388 ккал",
       "photo": ""
     },
     {
@@ -223,7 +222,7 @@
       "description": "270 г, в медовой глазури",
       "price": 455,
       "weight": "270 г",
-      "kbju": "",
+      "kbju": "Б:40.9 · Ж:94.9 · У:34.2 · 1154 ккал",
       "photo": ""
     },
     {
@@ -231,7 +230,7 @@
       "description": "540 г, в медовой глазури",
       "price": 645,
       "weight": "540 г",
-      "kbju": "",
+      "kbju": "Б:80.5 · Ж:119.7 · У:55.1 · 1620 ккал",
       "photo": ""
     },
     {
@@ -247,7 +246,7 @@
       "description": "250 г",
       "price": 225,
       "weight": "250 г",
-      "kbju": "",
+      "kbju": "Б:7.8 · Ж:21.8 · У:56.2 · 452 ккал",
       "photo": ""
     },
     {
@@ -255,7 +254,7 @@
       "description": "250 г, с томатами",
       "price": 315,
       "weight": "250 г",
-      "kbju": "",
+      "kbju": "Б:26.5 · Ж:62.7 · У:57.6 · 901 ккал",
       "photo": ""
     },
     {
@@ -263,7 +262,7 @@
       "description": "250 г",
       "price": 395,
       "weight": "250 г",
-      "kbju": "",
+      "kbju": "Б:7.9 · Ж:31.1 · У:58.0 · 543 ккал",
       "photo": ""
     },
     {
@@ -311,7 +310,7 @@
       "description": "270 г",
       "price": 355,
       "weight": "270 г",
-      "kbju": "",
+      "kbju": "Б:20.0 · Ж:44.9 · У:3.9 · 504 ккал",
       "photo": ""
     },
     {
@@ -319,7 +318,7 @@
       "description": "210 г, с цыплёнком и апельсинами, рукколой",
       "price": 335,
       "weight": "210 г",
-      "kbju": "",
+      "kbju": "Б:13.8 · Ж:11.3 · У:15.3 · 218 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/vdtw0mshqi2atawiwpco.jpg"
     },
     {
@@ -327,7 +326,7 @@
       "description": "210 г",
       "price": 325,
       "weight": "210 г",
-      "kbju": "",
+      "kbju": "Б:18.4 · Ж:35.6 · У:8.8 · 429 ккал",
       "photo": ""
     },
     {
@@ -335,7 +334,7 @@
       "description": "210 г",
       "price": 475,
       "weight": "210 г",
-      "kbju": "",
+      "kbju": "Б:42.5 · Ж:52.8 · У:8.8 · 681 ккал",
       "photo": ""
     },
     {
@@ -343,7 +342,7 @@
       "description": "210 г",
       "price": 445,
       "weight": "210 г",
-      "kbju": "",
+      "kbju": "Б:12.6 · Ж:44.4 · У:8.7 · 486 ккал",
       "photo": ""
     },
     {
@@ -359,7 +358,7 @@
       "description": "250 г, с фарфалле, ветчиной и шампиньонами",
       "price": 315,
       "weight": "250 г",
-      "kbju": "",
+      "kbju": "Б:10.9 · Ж:20.3 · У:13.8 · 282 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/ghgzdw7r1mxhxiieh4hm.jpg"
     },
     {
@@ -377,7 +376,7 @@
       "description": "300 г, с яйцом",
       "price": 185,
       "weight": "300 г",
-      "kbju": "",
+      "kbju": "Б:15.3 · Ж:8.2 · У:5.7 · 157 ккал",
       "photo": ""
     },
     {
@@ -385,7 +384,7 @@
       "description": "350 г, с говядиной и гренками с салом",
       "price": 260,
       "weight": "350 г",
-      "kbju": "",
+      "kbju": "Б:10.0 · Ж:22.0 · У:18.1 · 311 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/mqyw73vxrywqzsqbmbwk.jpg"
     },
     {
@@ -393,7 +392,7 @@
       "description": "220 г, с цыплёнком и песто",
       "price": 255,
       "weight": "220 г",
-      "kbju": "",
+      "kbju": "Б:14.0 · Ж:46.9 · У:21.3 · 563 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/uojb2vdfs9zhat8b0acb.jpg"
     },
     {
@@ -401,7 +400,7 @@
       "description": "180 г",
       "price": 215,
       "weight": "180 г",
-      "kbju": "",
+      "kbju": "Б:4.4 · Ж:42.8 · У:19.1 · 478 ккал",
       "photo": ""
     },
     {
@@ -409,7 +408,7 @@
       "description": "220 г",
       "price": 295,
       "weight": "220 г",
-      "kbju": "",
+      "kbju": "Б:3.8 · Ж:23.3 · У:10.4 · 266 ккал",
       "photo": ""
     },
     {
@@ -417,7 +416,7 @@
       "description": "190 г",
       "price": 255,
       "weight": "190 г",
-      "kbju": "",
+      "kbju": "Б:3.8 · Ж:23.3 · У:10.4 · 266 ккал",
       "photo": ""
     },
     {
@@ -425,7 +424,7 @@
       "description": "300 г, свинина в остром сливочном соусе",
       "price": 365,
       "weight": "300 г",
-      "kbju": "",
+      "kbju": "Б:22.6 · Ж:92.7 · У:33.7 · 1060 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/tiiupfm6hnxqvkmntrhp.jpg"
     },
     {
@@ -433,7 +432,7 @@
       "description": "300 г, в сливочно-устричном соусе",
       "price": 365,
       "weight": "300 г",
-      "kbju": "",
+      "kbju": "Б:19.2 · Ж:13.3 · У:32.4 · 326 ккал",
       "photo": ""
     },
     {
@@ -441,7 +440,7 @@
       "description": "180 г",
       "price": 305,
       "weight": "180 г",
-      "kbju": "",
+      "kbju": "Б:21.7 · Ж:49.5 · У:60.1 · 772 ккал",
       "photo": ""
     },
     {
@@ -449,7 +448,7 @@
       "description": "180 г",
       "price": 305,
       "weight": "180 г",
-      "kbju": "",
+      "kbju": "Б:17.1 · Ж:38.1 · У:57.4 · 641 ккал",
       "photo": ""
     },
     {
@@ -457,7 +456,7 @@
       "description": "350 г, с вялеными томатами, пармезаном и цукини",
       "price": 555,
       "weight": "350 г",
-      "kbju": "",
+      "kbju": "Б:24.1 · Ж:20.9 · У:17.5 · 355 ккал",
       "photo": ""
     },
     {
@@ -465,7 +464,7 @@
       "description": "350 г, с картофельным пюре и сицилийским соусом",
       "price": 435,
       "weight": "350 г",
-      "kbju": "",
+      "kbju": "Б:46.9 · Ж:42.8 · У:28.1 · 685 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/caxhxtfmxvjpcawhuft1.jpg"
     },
     {
@@ -473,7 +472,7 @@
       "description": "320 г, с картофельными дольками, морковью и тыквой",
       "price": 585,
       "weight": "320 г",
-      "kbju": "",
+      "kbju": "Б:48.4 · Ж:17.9 · У:23.1 · 447 ккал",
       "photo": ""
     },
     {
@@ -481,7 +480,7 @@
       "description": "450 г, с картофелем по-деревенски",
       "price": 695,
       "weight": "450 г",
-      "kbju": "",
+      "kbju": "Б:46.0 · Ж:64.8 · У:41.5 · 934 ккал",
       "photo": ""
     }
   ],
@@ -491,7 +490,7 @@
       "description": "250 г, с беконом в сливочном соусе",
       "price": 365,
       "weight": "250 г",
-      "kbju": "",
+      "kbju": "Б:38.0 · Ж:58.1 · У:51.4 · 880 ккал",
       "photo": ""
     },
     {
@@ -499,7 +498,7 @@
       "description": "300 г, с брокколи в сливочном соусе",
       "price": 345,
       "weight": "300 г",
-      "kbju": "",
+      "kbju": "Б:30.4 · Ж:24.8 · У:58.7 · 579 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/ioknar4j6crwxsicwcv3.jpg"
     },
     {
@@ -541,7 +540,7 @@
       "description": "240 г, с цыплёнком, пармезаном и томатом",
       "price": 325,
       "weight": "240 г",
-      "kbju": "",
+      "kbju": "Б:27.4 · Ж:39.5 · У:57.6 · 695 ккал",
       "photo": ""
     },
     {
@@ -549,7 +548,7 @@
       "description": "240 г, с пряной говядиной, гаудой и томатом",
       "price": 335,
       "weight": "240 г",
-      "kbju": "",
+      "kbju": "Б:25.3 · Ж:30.7 · У:8.4 · 411 ккал",
       "photo": ""
     },
     {
@@ -557,7 +556,7 @@
       "description": "240 г, с лососем, сливочным сыром, огурцом, каперсами",
       "price": 395,
       "weight": "240 г",
-      "kbju": "",
+      "kbju": "Б:9.4 · Ж:22.2 · У:9.8 · 279 ккал",
       "photo": ""
     },
     {
@@ -565,7 +564,7 @@
       "description": "240 г, с беконом, глазуньей и томатом",
       "price": 325,
       "weight": "240 г",
-      "kbju": "",
+      "kbju": "Б:13.6 · Ж:21.6 · У:11.9 · 296 ккал",
       "photo": ""
     },
     {
@@ -573,7 +572,7 @@
       "description": "350 г, с сочной котлетой, солёными огурцами, томатами и картофельными дольками",
       "price": 435,
       "weight": "350 г",
-      "kbju": "",
+      "kbju": "Б:16.2 · Ж:81.7 · У:80.3 · 1121 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/zdowerzgiiumqwr9fulg.jpg"
     },
     {
@@ -599,7 +598,7 @@
       "description": "180 г, со сливочным пломбиром",
       "price": 255,
       "weight": "180 г",
-      "kbju": "",
+      "kbju": "Б:2.1 · Ж:7.6 · У:15.4 · 138 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/kz4dfps2kxu9bzqfxcu0.jpg"
     },
     {
@@ -607,7 +606,7 @@
       "description": "150 г, с джемом и миндалём",
       "price": 215,
       "weight": "150 г",
-      "kbju": "",
+      "kbju": "Б:0.6 · Ж:1.6 · У:5.6 · 39 ккал",
       "photo": "https://res.cloudinary.com/dqxc3rfml/image/upload/sweetpepper/iyqjd20gtvtf0bg37orz.jpg"
     },
     {
@@ -615,7 +614,7 @@
       "description": "240 г, сливочный с запечённой корочкой",
       "price": 335,
       "weight": "240 г",
-      "kbju": "",
+      "kbju": "Б:1.3 · Ж:8.4 · У:10.5 · 123 ккал",
       "photo": ""
     },
     {
