@@ -943,8 +943,6 @@ if (document.getElementById('viewsChart') && analyticsData.views_by_day.length >
   });
 }
 </script>
-</body>
-</html>
 <script>
 // ─── LUNCH SECTION ───────────────────────────
 const LUNCH = {{ lunch | tojson }};
@@ -1075,3 +1073,5 @@ async function deleteLunchDish(cat, idx) {
   if ((await r.json()).ok) { LUNCH[cat].splice(idx,1); showToast('Блюдо удалено'); loadLunchDishes(); }
 }
 </script>
+</body>
+</html>
