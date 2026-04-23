@@ -4,3 +4,4 @@ cloudinary
 psycopg2-binary
 requests
 pyTelegramBotAPI
+python-dotenv
