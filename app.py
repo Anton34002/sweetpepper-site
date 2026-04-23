@@ -23,6 +23,7 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 print(f"DATABASE_URL: {DATABASE_URL[:30] if DATABASE_URL else 'EMPTY'}...")
+print(f"ADMIN_PASSWORD: '{ADMIN_PASSWORD}'")
 
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
@@ -502,7 +503,9 @@ def admin_login():
         return render_template("admin_login.html", error=error)
 
     if request.method == "POST":
-        if request.form.get("password") == ADMIN_PASSWORD:
+        entered_pass = request.form.get("password")
+        print(f"Entered: {entered_pass}, Expected: {ADMIN_PASSWORD}")
+        if entered_pass == ADMIN_PASSWORD:
             reset_attempts(ip)
             session["admin"] = True
             session.permanent = True
