@@ -536,10 +536,12 @@ def admin_panel():
 @app.route("/admin/save_info", methods=["POST"])
 @admin_required
 def admin_save_info():
+    print(f"Save info request: {dict(request.form)}")
     info = load_cafe_info()
     for field in ["name", "address", "hours", "phone", "promo", "instagram", "vk", "telegram"]:
         if field in request.form:
             info[field] = request.form[field]
+    print(f"Saving info: {info}")
     save_cafe_info(info)
     return jsonify({"ok": True})
 
