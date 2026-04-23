@@ -10,6 +10,9 @@ import cloudinary.uploader
 import psycopg2
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -29,18 +32,36 @@ cloudinary.config(
 # DATABASE POOL
 # ─────────────────────────────────────────────
 
-db_pool = pool.ThreadedConnectionPool(1, 10, DATABASE_URL)
+db_pool = None
 
 def get_db():
+    if db_pool is None:
+        return None
     conn = db_pool.getconn()
     conn.cursor_factory = RealDictCursor
     return conn
 
 def release_db(conn):
-    db_pool.putconn(conn)
+    if db_pool:
+        db_pool.putconn(conn)
 
 def init_db():
-    conn = get_db()
+    global db_pool
+    if not DATABASE_URL:
+        print("WARNING: No DATABASE_URL configured. Using file-based storage.")
+        return None
+    try:
+        db_pool = pool.ThreadedConnectionPool(1, 10, DATABASE_URL, sslmode='require')
+        conn = get_db()
+    except Exception as e:
+        print(f"DB connection failed: {e}. Trying without SSL...")
+        try:
+            db_pool = pool.ThreadedConnectionPool(1, 10, DATABASE_URL)
+            conn = get_db()
+        except Exception as e2:
+            print(f"DB connection failed again: {e2}. Using file-based storage.")
+            db_pool = None
+            return None
     cur = conn.cursor()
 
     cur.execute("""
@@ -124,6 +145,12 @@ def init_db():
     release_db(conn)
 
 def db_get(key):
+    if db_pool is None:
+        try:
+            with open(f"{key}.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return None
     conn = get_db()
     cur = conn.cursor()
     cur.execute("SELECT value FROM settings WHERE key = %s", (key,))
@@ -133,6 +160,10 @@ def db_get(key):
     return json.loads(row["value"]) if row else None
 
 def db_set(key, value):
+    if db_pool is None:
+        with open(f"{key}.json", "w", encoding="utf-8") as f:
+            json.dump(value, f, ensure_ascii=False)
+        return
     conn = get_db()
     cur = conn.cursor()
     cur.execute("""
@@ -254,12 +285,36 @@ def get_analytics():
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def load_json_file(filename, fallback=None):
+    """Load data from local JSON file, fallback to db_get"""
+    if os.path.exists(filename):
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            pass
+    return fallback
+
+def save_json_file(filename, data):
+    """Save data to local JSON file"""
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except:
+        pass
+
 def load_menu():
+    # Try local file first
+    data = load_json_file("menu.json")
+    if data:
+        return data
+    # Then try database
     data = db_get("menu")
     return data if data else FALLBACK_MENU
 
 def save_menu(menu):
     db_set("menu", menu)
+    save_json_file("menu.json", menu)
 
 def load_cafe_info():
     defaults = {
@@ -272,6 +327,10 @@ def load_cafe_info():
         "vk": "",
         "telegram": "https://t.me/SweetPepper1025bot",
     }
+    data = load_json_file("cafe_info.json")
+    if data:
+        defaults.update(data)
+        return defaults
     data = db_get("cafe_info")
     if data:
         defaults.update(data)
@@ -279,20 +338,29 @@ def load_cafe_info():
 
 def save_cafe_info(info):
     db_set("cafe_info", info)
+    save_json_file("cafe_info.json", info)
 
 def load_events():
+    data = load_json_file("events.json")
+    if data:
+        return data
     data = db_get("events")
     return data if data else []
 
 def save_events(events):
     db_set("events", events)
+    save_json_file("events.json", events)
 
 def load_lunch():
+    data = load_json_file("lunch.json")
+    if data:
+        return data
     data = db_get("lunch")
     return data if data else {}
 
 def save_lunch(lunch):
     db_set("lunch", lunch)
+    save_json_file("lunch.json", lunch)
 
 # ─────────────────────────────────────────────
 # ЗАЩИТА ОТ БРУТФОРСА
@@ -394,6 +462,29 @@ def api_info():
 @app.route("/api/events")
 def api_events():
     return jsonify(load_events())
+
+@app.route("/admin/export_local")
+@admin_required
+def export_local():
+    """Export all data to local JSON files for offline use"""
+    menu = load_menu()
+    info = load_cafe_info()
+    events = load_events()
+    lunch = load_lunch()
+    
+    with open("menu.json", "w", encoding="utf-8") as f:
+        json.dump(menu, f, ensure_ascii=False, indent=2)
+    
+    with open("cafe_info.json", "w", encoding="utf-8") as f:
+        json.dump(info, f, ensure_ascii=False, indent=2)
+    
+    with open("events.json", "w", encoding="utf-8") as f:
+        json.dump(events, f, ensure_ascii=False, indent=2)
+    
+    with open("lunch.json", "w", encoding="utf-8") as f:
+        json.dump(lunch, f, ensure_ascii=False, indent=2)
+    
+    return jsonify({"ok": True, "message": "Data exported to JSON files!"})
 
 # ─────────────────────────────────────────────
 # ADMIN ROUTES
