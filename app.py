@@ -453,7 +453,14 @@ def api_track_dish():
 
 @app.route("/api/menu")
 def api_menu():
-    return jsonify(load_menu())
+    menu = load_menu()
+    # Save to JSON file for backup
+    try:
+        with open("menu.json", "w", encoding="utf-8") as f:
+            json.dump(menu, f, ensure_ascii=False, indent=2)
+    except:
+        pass
+    return jsonify(menu)
 
 @app.route("/api/info")
 def api_info():
